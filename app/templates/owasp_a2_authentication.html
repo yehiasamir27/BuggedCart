@@ -1,0 +1,66 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A2 — Broken Authentication</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Source Code Pro', monospace;
+      background-color: #0a0a0a;
+      color: #00ff00;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background-color: #111;
+      padding: 20px;
+      border: 1px solid #00ff00;
+    }
+    input, button {
+      background-color: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 8px;
+      margin: 5px;
+      width: 200px;
+    }
+    .error {
+      color: #ff0000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>A2 — Broken Authentication</h1>
+    <p class="muted">This page demonstrates plaintext password storage and weak login checks (lab only).</p>
+
+    <h3>Create demo user (plaintext)</h3>
+    <p><a href="/vuln/a2-create-user"><button>Create demo user (admin/password123)</button></a></p>
+
+    <hr>
+    <h3>Login (vulnerable check)</h3>
+    {% if error %}
+      <p class="error">{{ error }}</p>
+    {% endif %}
+    <form method="POST" action="/vuln/a2-login">
+      <input name="username" placeholder="username" required><br><br>
+      <input name="password" placeholder="password" type="password" required><br><br>
+      <button type="submit">Login</button>
+    </form>
+
+    <h3>What is Broken Authentication?</h3>
+    <p>Occurs when authentication mechanisms are implemented incorrectly, allowing attackers to compromise passwords, keys, or session tokens.</p>
+
+    <h3>Mitigation (recommended)</h3>
+    <ul>
+      <li>Implement multi-factor authentication</li>
+      <li>Never store passwords in plaintext</li>
+      <li>Use strong password hashing algorithms</li>
+      <li>Implement proper session management</li>
+    </ul>
+  </div>
+</body>
+</html>

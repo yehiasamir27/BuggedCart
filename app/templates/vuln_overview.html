@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Vulnerabilities Overview - BuggedCart</title>
+
+    <!-- Fonts + hacker CSS/JS -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+    <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
+</head>
+<body class="hacker-body">
+    <canvas id="matrix-canvas"></canvas>
+
+    <header class="hacker-header">
+      <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+      <nav class="hacker-nav">
+        <a href="/" class="nav-link">HOME</a>
+        <a href="/products" class="nav-link">PRODUCTS</a>
+        <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+        <a href="/admin/contact" class="nav-link">CONTACT</a>
+        <a href="/login" class="nav-btn">ADMIN</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hacker-card">
+        <h1>Vulnerabilities Overview</h1>
+        <p class="muted">This page documents the intentionally-vulnerable lab items. Do not expose the backend publicly.</p>
+
+        <div style="margin-top:18px; display:grid; gap:12px;">
+          <div class="hacker-card">
+            <h3>A1 — Injection (SQLi)</h3>
+            <p class="muted">Summary: Unparameterized SQL queries in search/product endpoints.</p>
+            <p><strong>Location (edit with exact path/lines):</strong> backend/routes.py — <em>replace with exact file:line</em></p>
+            <p><strong>How tested:</strong> local lab scan (ZAP). See docs/</p>
+            <p><strong>Mitigation:</strong> Use parameterized queries (prepared statements), input validation, least-privilege DB account.</p>
+          </div>
+
+          <div class="hacker-card">
+            <h3>A7 — Cross-site Scripting (XSS)</h3>
+            <p class="muted">Summary: User reviews are rendered with `|safe` or without escaping.</p>
+            <p><strong>Location (edit):</strong> app/templates/product.html — render review output: replace `|safe` and sanitize inputs.</p>
+            <p><strong>Mitigation:</strong> Remove `|safe`, use automatic escaping, or sanitize server-side with Bleach.</p>
+          </div>
+
+          <div class="hacker-card">
+            <h3>Command Injection</h3>
+            <p class="muted">Summary: Shell calls built using user input (e.g., contact/admin commands).</p>
+            <p><strong>Location (edit):</strong> backend/whatever_handler.py — replace with `subprocess.run([...], shell=False)` and input validation.</p>
+            <p><strong>Mitigation:</strong> Avoid shell usage with user input; use safe APIs and validate values.</p>
+          </div>
+
+          <div class="hacker-card">
+            <h3>CSRF</h3>
+            <p class="muted">Summary: State-changing POST endpoints lack CSRF tokens (delete product, admin actions).</p>
+           <p><strong>Mitigation:</strong> Use Flask-WTF CSRFProtect and include <code>{{ '{{ csrf_token() }}' }}</code> in forms.</p>
+
+          </div>
+
+          <div class="hacker-card">
+            <h3>Other</h3>
+            <p class="muted">Add any other items you implemented — e.g., insecure file upload, misconfig. Fill exact locations and mitigation notes below.</p>
+            <pre style="white-space:pre-wrap; background:rgba(255,255,255,0.02); padding:8px; border-radius:6px;">
+- File: __________
+- Lines: __________
+- Test evidence: docs/screenshots/...
+- Mitigation applied: __________
+            </pre>
+          </div>
+
+        </div>
+
+      </section>
+    </main>
+
+    <footer class="hacker-footer">
+      <div>BuggedCart — training lab UI (display only)</div>
+      <div class="muted">Keep vulnerable services isolated & local.</div>
+      <h2>OWASP Top 10 — Quick Links</h2>
+<ul class="vuln-links">
+  <li><a href="/vuln/a1-injection">A1 — Injection</a></li>
+  <li><a href="/vuln/a2-authentication">A2 — Broken Authentication</a></li>
+  <li><a href="/vuln/a3-sensitive-data">A3 — Sensitive Data Exposure</a></li>
+  <li><a href="/vuln/a4-xxe">A4 — XML External Entities (XXE)</a></li>
+  <li><a href="/vuln/a5-access-control">A5 — Broken Access Control</a></li>
+  <li><a href="/vuln/a6-misconfig">A6 — Security Misconfiguration</a></li>
+  <li><a href="/vuln/a7-xss">A7 — Cross-site Scripting (XSS)</a></li>
+  <li><a href="/vuln/a8-deserialization">A8 — Insecure Deserialization</a></li>
+  <li><a href="/vuln/a9-components">A9 — Using Components with Known Vulnerabilities</a></li>
+  <li><a href="/vuln/a10-logging">A10 — Logging & Monitoring Failures</a></li>
+</ul>
+
+    </footer>
+</body>
+</html>

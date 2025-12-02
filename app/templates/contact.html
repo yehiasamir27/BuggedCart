@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Admin Contact</title>
+
+    <!-- Fonts + hacker CSS/JS -->
+    <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+    <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
+</head>
+<body class="hacker-body">
+    <canvas id="matrix-canvas"></canvas>
+
+    <header class="hacker-header">
+      <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+      <nav class="hacker-nav">
+        <a href="/" class="nav-link">HOME</a>
+        <a href="/products" class="nav-link">PRODUCTS</a>
+        <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+        <a href="/admin/contact" class="nav-link">CONTACT</a>
+        <a href="/login" class="nav-btn">ADMIN</a>
+      </nav>
+    </header>
+
+    <main class="container">
+        <div class="hacker-card" style="max-width:700px;margin:auto;">
+            <h1>📨 Contact Admin</h1>
+
+            <form method="POST">
+                <input type="text" name="email" placeholder="Recipient email" required>
+                <textarea name="message" placeholder="Message..." required rows="5" cols="40"></textarea><br><br>
+                <button type="submit">Send</button>
+            </form>
+
+            {% if output %}
+                <h3>Shell Output:</h3>
+                <pre>{{ output }}</pre>
+            {% endif %}
+        </div>
+    </main>
+
+    <footer class="hacker-footer">
+      <div>BuggedCart — training lab UI (display only)</div>
+      <div class="muted">Keep vulnerable services isolated & local.</div>
+    </footer>
+</body>
+</html>

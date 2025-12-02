@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A5 — Broken Access Control</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A5 — Broken Access Control</h1>
+      <p class="muted">This demo shows delete actions available without authentication (lab only).</p>
+
+      <h3>Products (anyone can delete)</h3>
+      <ul>
+        {% for id,name in items %}
+          <li>
+            {{ name }}
+            <form method="POST" action="/admin/delete/{{ id }}" style="display:inline">
+              <button type="submit" onclick="return confirm('Delete product {{ name }}?')">Delete</button>
+            </form>
+          </li>
+        {% endfor %}
+      </ul>
+
+      <p class="muted">Mitigation: check roles and require auth for admin actions.</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

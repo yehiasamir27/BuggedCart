@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>A10  Logging & Monitoring</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}"></head>
+<body class="hacker-body"><canvas id="matrix-canvas"></canvas>
+<header class="hacker-header"> ... </header>
+<main class="container"><section class="hacker-card">
+  <h1>A10  Logging & Monitoring</h1>
+  <p class="muted">Insufficient logging or alerting delays detection of attacks.</p>
+  <h3>Mitigations</h3>
+  <ul><li>Log security-relevant events and monitor with alerts.</li><li>Store logs securely and use retention appropriate for your environment.</li></ul>
+  <h3>Where to patch</h3>
+  <p>Instrument login failures, admin actions, and errors; avoid logging secrets.</p>
+</section></main><footer class="hacker-footer"></footer></body></html>

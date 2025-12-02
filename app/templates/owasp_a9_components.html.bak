@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>A9  Component Vulnerabilities</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}"></head>
+<body class="hacker-body"><canvas id="matrix-canvas"></canvas>
+<header class="hacker-header"> ... </header>
+<main class="container"><section class="hacker-card">
+  <h1>A9  Components with Known Vulnerabilities</h1>
+  <p class="muted">Outdated libraries can contain known CVEs that attackers exploit.</p>
+  <h3>Mitigations</h3>
+  <ul><li>Keep dependencies up to date and subscribe to advisories.</li><li>Use tools like `pip list --outdated` and safety/audit tools.</li></ul>
+  <h3>Where to patch</h3>
+  <p>Update dependencies and rebuild; document the version changes in your report.</p>
+</section></main><footer class="hacker-footer"></footer></body></html>

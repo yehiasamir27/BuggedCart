@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A10 — Logging & Monitoring</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A10 — Logging & Monitoring Failures</h1>
+      <p class="muted">Submit input and this demo will write it to a local log file (educational only).</p>
+
+      <form method="POST" action="/vuln/a10-logging">
+        <input name="val" placeholder="Anything to log"><button type="submit">Log</button>
+      </form>
+
+      {% if msg %}<p style="color:green">{{ msg }}</p>{% endif %}
+      <p class="muted">Mitigation: redact secrets in logs and monitor for suspicious activity.</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

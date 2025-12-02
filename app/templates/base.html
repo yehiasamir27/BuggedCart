@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{% block title %}BuggedCart{% endblock %}</title>
+
+  <!-- Monospace hacker font -->
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <!-- Hacker theme CSS -->
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+
+  <!-- small inline style tweak for canvas always behind -->
+  <style>
+    /* in case static serving has caching, this ensures canvas sits behind content */
+    #matrix-canvas { position: fixed; z-index: -1; left:0; top:0; }
+  </style>
+
+  {% block head_extra %}{% endblock %}
+</head>
+<body class="hacker-body">
+
+  <!-- matrix/coder background canvas -->
+  <canvas id="matrix-canvas"></canvas>
+
+  <header class="hacker-header">
+    <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/products" class="nav-link">PRODUCTS</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+      <a href="/admin/contact" class="nav-link">CONTACT</a>
+      <a href="/login" class="nav-btn">ADMIN</a>
+    </nav>
+  </header>
+
+  <main id="page-content" class="container">
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="hacker-footer">
+    <div>BuggedCart — training lab UI (display only)</div>
+    <div class="muted">Keep vulnerable services isolated & local.</div>
+  </footer>
+
+  <!-- Hacker JS (matrix + cursor) -->
+  <script src="{{ url_for('static', filename='js/hacker.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>A8  Insecure Deserialization</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}"></head>
+<body class="hacker-body"><canvas id="matrix-canvas"></canvas>
+<header class="hacker-header"> ... </header>
+<main class="container"><section class="hacker-card">
+  <h1>A8 — Insecure Deserialization</h1>
+  <p class="muted">Executing or trusting deserialized data from untrusted sources can lead to code execution.</p>
+  <h3>Mitigations</h3>
+  <ul><li>Avoid using insecure deserializers for untrusted data (e.g., pickle).</li><li>Use safe formats (JSON) and validate schema.</li></ul>
+  <h3>Where to patch</h3>
+  <p>Search for uses of Python <code>pickle</code> or raw eval on data inputs.</p>
+</section></main><footer class="hacker-footer"></footer></body></html>

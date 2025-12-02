@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>A7  XSS</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}"></head>
+<body class="hacker-body"><canvas id="matrix-canvas"></canvas>
+<header class="hacker-header"> ... </header>
+<main class="container"><section class="hacker-card">
+  <h1>A7  Cross-site Scripting (XSS)</h1>
+  <p class="muted">Injection of untrusted content into web pages that is interpreted by the browser.</p>
+  <h3>Mitigations</h3>
+  <ul><li>Escape output by default (Jinja does this unless |safe is used).</li><li>Sanitize or whitelist allowed markup using a library (e.g., Bleach) if HTML is required.</li><li>Use CSP headers to limit allowed script sources.</li></ul>
+  <h3>Where to patch</h3>
+  <p>Remove uses of <code>|safe</code> and sanitize review/comment inputs.</p>
+</section></main><footer class="hacker-footer"></footer></body></html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Product | BuggedCart</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/hacker.css">
+  <script src="static/js/hacker.js" defer></script>
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+
+  <header class="hacker-header">
+    <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+    <nav class="hacker-nav">
+      <a href="home.html" class="nav-link">HOME</a>
+      <a href="product.html" class="nav-link">PRODUCTS</a>
+      <a href="contact.html" class="nav-link">CONTACT</a>
+      <a href="login.html" class="nav-btn">ADMIN</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div class="hacker-card">
+      <h1>Demo Product - $99</h1>
+      <p>This is a sample product description.</p>
+
+      <hr>
+      <h3>Leave a Review</h3>
+      <form method="POST">
+        <textarea name="comment" rows="4" cols="40" placeholder="Write your review..."></textarea><br>
+        <button type="submit">Submit</button>
+      </form>
+
+      <hr>
+      <h3>Reviews</h3>
+      <p>&lt;script&gt;alert('XSS Example')&lt;/script&gt;</p>
+    </div>
+  </main>
+
+  <footer class="hacker-footer">
+    <div>BuggedCart — training lab UI</div>
+    <div class="muted">Keep vulnerable services isolated & local.</div>
+  </footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A1 Injection</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <style>
+    body { 
+      font-family: 'Source Code Pro', monospace;
+      background-color: #0a0a0a;
+      color: #00ff00;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background-color: #111;
+      padding: 20px;
+      border: 1px solid #00ff00;
+    }
+    input, button {
+      background-color: #000;
+      color: #00ff00;
+      border: 1px solid #00ff00;
+      padding: 5px;
+      margin: 5px;
+    }
+    ul { 
+      list-style-type: none;
+      padding: 0;
+    }
+    li {
+      background-color: #222;
+      margin: 5px 0;
+      padding: 10px;
+      border: 1px solid #333;
+    }
+    .injection-detected {
+      background-color: #330000;
+      border: 1px solid #ff0000;
+      padding: 15px;
+      margin: 10px 0;
+    }
+    .normal-search {
+      background-color: #222;
+      border: 1px solid #00ff00;
+      padding: 15px;
+      margin: 10px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>A1 Injection</h1>
+    
+    <form method="GET" action="/vuln/a1-sqli">
+      <input name="q" placeholder="search (try: OR '1'='1')" value="{{ q }}">
+      <button>Search Products</button>
+    </form>
+
+    {% if injection_detected %}
+      <div class="injection-detected">
+        <h2>SQL Injection Detected!</h2>
+        <p>SQL injection payload detected: <strong>{{ q }}</strong></p>
+        <p>Displaying fake products to demonstrate injection impact.</p>
+      </div>
+      
+      <div class="injection-detected">
+        <h3>Fake Products (Injection Results):</h3>
+        <ul>
+          {% for p in products %}
+            <li><strong>Product:</strong> {{ p[1] }} | <strong>Price:</strong> ${{ p[2] }} | <strong>ID:</strong> {{ p[0] }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% else %}
+      <div class="normal-search">
+        <ul>
+          {% for p in products %}
+            <li><strong>Product:</strong> {{ p[1] }} | <strong>Price:</strong> ${{ p[2] }} | <strong>ID:</strong> {{ p[0] }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+    {% endif %}
+
+    <h3>What is SQL Injection?</h3>
+    <p>SQL Injection occurs when user input is improperly sanitized before being used in database queries.</p>
+    
+    <h3>Safe example (concept)</h3>
+    <pre>-- Vulnerable pattern (concept):
+sql = "SELECT * FROM product WHERE name LIKE '%" + user_input + "%'"
+
+-- Safe pattern (concept):
+cursor.execute("SELECT * FROM product WHERE name LIKE ?", (user_input,))</pre>
+    
+    <h3>Why it matters</h3>
+    <p>Injection can expose or modify data, or run unwanted commands on the DB/server.</p>
+    
+    <h3>Mitigation (recommended)</h3>
+    <ul>
+      <li>Use parameterized queries / prepared statements.</li>
+      <li>Apply input validation and least privilege for DB accounts.</li>
+      <li>Escape or bind parameters instead of concatenating.</li>
+    </ul>
+  </div>
+</body>
+</html>

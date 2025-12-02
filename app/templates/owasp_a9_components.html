@@ -1,0 +1,25 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A9 — Components with Known Vulnerabilities</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A9 — Components with Known Vulnerabilities</h1>
+      <p class="muted">This page shows an intentionally old requirements file for teaching.</p>
+
+      <h3>requirements_vuln.txt</h3>
+      <pre>{{ reqs }}</pre>
+
+      <p class="muted">Mitigation: update packages and run dependency scanners (safety, pip-audit).</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

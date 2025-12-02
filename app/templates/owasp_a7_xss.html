@@ -1,0 +1,27 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A7 — XSS (Stored)</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A7 — Cross-site Scripting (Stored)</h1>
+      <p class="muted">Add a review for product #1. Stored reviews will be rendered unsafely in product page (lab).</p>
+
+      <form method="POST" action="/product/1">
+        <textarea name="comment" rows="4" cols="60" placeholder="Write a review..."></textarea><br><br>
+        <button type="submit">Submit review for product 1</button>
+      </form>
+
+      <p class="muted">Mitigation: escape output and sanitize inputs; remove <code>|safe</code>.</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

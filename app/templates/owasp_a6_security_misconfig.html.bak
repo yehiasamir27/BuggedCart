@@ -1,0 +1,15 @@
+﻿<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>A6  Security Misconfiguration</title>
+<link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}"></head>
+<body class="hacker-body"><canvas id="matrix-canvas"></canvas>
+<header class="hacker-header"> ... </header>
+<main class="container"><section class="hacker-card">
+  <h1>A6  Security Misconfiguration</h1>
+  <p class="muted">Exposed debug pages, default credentials, or unnecessary services can be abused.</p>
+  <h3>Mitigations</h3>
+  <ul><li>Disable debug mode in production.</li><li>Harden server config and remove default accounts.</li></ul>
+  <h3>Where to patch</h3>
+  <p>Ensure <code>debug=False</code> and no sensitive info is exposed in error pages.</p>
+</section></main><footer class="hacker-footer"></footer></body></html>

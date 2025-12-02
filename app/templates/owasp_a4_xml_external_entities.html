@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A4 — XXE / XML Parsing</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A4 — XML Parsing (XXE demonstration)</h1>
+      <p class="muted">Paste XML below and click Parse. This page uses a naive parser (lab only).</p>
+
+      <form method="POST" action="/vuln/a4-xml">
+        <textarea name="xml" rows="10" cols="70" placeholder="&lt;root&gt;...&lt;/root&gt;">{{ request.form.xml if request.method=='POST' else '' }}</textarea><br><br>
+        <button type="submit">Parse XML</button>
+      </form>
+
+      {% if result %}
+        <hr>
+        <h3>Parse result (first 1000 chars)</h3>
+        <pre>{{ result }}</pre>
+      {% endif %}
+
+      <p class="muted">Mitigation: use secure parsers (defusedxml) and disable external entities.</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

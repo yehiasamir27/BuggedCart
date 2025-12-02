@@ -1,0 +1,31 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>A8 — Insecure Deserialization</title>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A8 — Insecure Deserialization (pickle)</h1>
+      <p class="muted">Paste a base64-encoded pickled object to be (unsafely) unpickled by the server (lab only).</p>
+
+      <form method="POST" action="/vuln/a8-deserialize">
+        <textarea name="p" rows="6" cols="70" placeholder="Base64 pickled payload (lab only)"></textarea><br><br>
+        <button type="submit">Unpickle</button>
+      </form>
+
+      {% if output %}
+        <hr><h3>Result</h3><pre>{{ output }}</pre>
+      {% endif %}
+
+      <p class="muted">Mitigation: do not use pickle for untrusted data; use safe formats and validate schema.</p>
+    </section>
+  </main>
+  <footer class="hacker-footer"></footer>
+</body>
+</html>

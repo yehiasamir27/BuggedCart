@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BuggedCart</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="static/css/hacker.css">
+  <script src="static/js/hacker.js" defer></script>
+</head>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+
+  <header class="hacker-header">
+    <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+    <nav class="hacker-nav">
+      <a href="home.html" class="nav-link">HOME</a>
+      <a href="product.html" class="nav-link">PRODUCTS</a>
+      <a href="contact.html" class="nav-link">CONTACT</a>
+      <a href="login.html" class="nav-btn">ADMIN</a>
+    </nav>
+  </header>
+
+  <main class="container">
+    <section class="hacker-card">
+      <h1>🛒 BuggedCart</h1>
+
+      <nav style="margin-bottom: 20px;">
+        <a href="login.html"><button>🔐 Admin Login</button></a>
+        <a href="contact.html"><button>📨 Contact Admin</button></a>
+      </nav>
+
+      <form method="get">
+        <input type="text" name="search" placeholder="Search for a product">
+        <button type="submit">Search</button>
+      </form>
+
+      <ul style="margin-top:20px;list-style:none;padding:0;">
+        <li>
+          <a href="product.html">Demo Product 1</a> - $99
+          <form method="POST" action="#" style="display:inline;">
+            <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
+          </form>
+        </li>
+        <li>
+          <a href="product.html">Demo Product 2</a> - $149
+          <form method="POST" action="#" style="display:inline;">
+            <button type="submit" onclick="return confirm('Delete this product?')">Delete</button>
+          </form>
+        </li>
+      </ul>
+    </section>
+  </main>
+
+  <footer class="hacker-footer">
+    <div>BuggedCart — training lab UI</div>
+    <div class="muted">Keep vulnerable services isolated & local.</div>
+  </footer>
+</body>
+</html>
