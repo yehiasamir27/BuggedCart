@@ -2,33 +2,159 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A5 — Broken Access Control</title>
+  <title>A5 - Broken Access Control | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+  <style>
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
+    }
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .product-list {
+      list-style: none;
+      padding: 0;
+    }
+    .product-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px;
+      background: #111;
+      border: 1px solid #333;
+      margin: 5px 0;
+      border-radius: 5px;
+    }
+    .delete-btn {
+      padding: 8px 15px;
+      background: #330000;
+      border: 1px solid #ff3333;
+      color: #ff3333;
+      cursor: pointer;
+      font-family: inherit;
+    }
+    .delete-btn:hover { background: #440000; }
+    .delete-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+    .message-box {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .message-success { background: rgba(0,255,0,0.1); border: 1px solid #00ff00; color: #00ff00; }
+    .message-error { background: rgba(255,0,0,0.1); border: 1px solid #ff3333; color: #ff3333; }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
+  </style>
 </head>
 <body class="hacker-body">
   <canvas id="matrix-canvas"></canvas>
-  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
+
   <main class="container">
     <section class="hacker-card">
-      <h1>A5 — Broken Access Control</h1>
-      <p class="muted">This demo shows delete actions available without authentication (lab only).</p>
+      <h1>A5 - Broken Access Control</h1>
+      <p class="muted">Test unauthorized access to admin functions without authentication.</p>
 
-      <h3>Products (anyone can delete)</h3>
-      <ul>
-        {% for id,name in items %}
-          <li>
-            {{ name }}
-            <form method="POST" action="/admin/delete/{{ id }}" style="display:inline">
-              <button type="submit" onclick="return confirm('Delete product {{ name }}?')">Delete</button>
-            </form>
-          </li>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
+
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Admin functions require authentication.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Anyone can delete products without login!
+        {% endif %}
+      </div>
+
+      {% if message %}
+      <div class="message-box {{ 'message-success' if 'deleted' in message.lower() and not patched else 'message-error' }}">
+        {{ message }}
+      </div>
+      {% endif %}
+
+      <h3>Product Management (Admin Only)</h3>
+      <p class="muted">Current user: <strong>Not logged in (Guest)</strong></p>
+      
+      <ul class="product-list">
+        {% for id, name in items %}
+        <li class="product-item">
+          <span>{{ name }} (ID: {{ id }})</span>
+          <form method="POST" action="/vuln/a5-access-control?patched={{ 'true' if patched else 'false' }}" style="display:inline">
+            <input type="hidden" name="product_id" value="{{ id }}">
+            <button type="submit" class="delete-btn" {% if patched %}title="Login required"{% endif %}>
+              Delete
+            </button>
+          </form>
+        </li>
+        {% else %}
+        <li class="product-item">No products available</li>
         {% endfor %}
       </ul>
 
-      <p class="muted">Mitigation: check roles and require auth for admin actions.</p>
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>How This Vulnerability Works</h3>
+        <p>Broken Access Control occurs when authorization checks are missing or improperly implemented.</p>
+        
+        <h4>Common Issues:</h4>
+        <ul>
+          <li>Missing authentication checks on sensitive endpoints</li>
+          <li>IDOR (Insecure Direct Object References)</li>
+          <li>Missing function-level access control</li>
+          <li>CORS misconfiguration</li>
+          <li>Privilege escalation through parameter manipulation</li>
+        </ul>
+        
+        <h4>Vulnerable Code:</h4>
+        <pre style="background:#000; padding:10px;">@app.route('/admin/delete/&lt;id&gt;', methods=['POST'])
+def delete(id):
+    # No authentication check!
+    db.delete(id)
+    return "Deleted"</pre>
+        
+        <h4>Secure Code:</h4>
+        <pre style="background:#000; padding:10px;">@app.route('/admin/delete/&lt;id&gt;', methods=['POST'])
+@login_required
+@admin_required
+def delete(id):
+    db.delete(id)
+    return "Deleted"</pre>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
     </section>
   </main>
-  <footer class="hacker-footer"></footer>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

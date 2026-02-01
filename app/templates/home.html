@@ -4,19 +4,83 @@
     <meta charset="utf-8">
     <title>BuggedCart</title>
 
-    <!-- Fonts + hacker CSS/JS -->
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
     <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
+    <style>
+        .disclaimer-box {
+            background: linear-gradient(135deg, #1a0000 0%, #0a0a0a 100%);
+            border: 2px solid #ff3333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .disclaimer-box h2 {
+            color: #ff3333;
+            margin-bottom: 10px;
+        }
+        .disclaimer-box p {
+            color: #ffcc00;
+        }
+        .brand-title {
+            font-size: 3em;
+            color: #00ff00;
+            text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        @keyframes glow {
+            from { text-shadow: 0 0 20px #00ff00, 0 0 40px #00ff00; }
+            to { text-shadow: 0 0 30px #00ff00, 0 0 60px #00ff00, 0 0 80px #00ff00; }
+        }
+        .subtitle {
+            color: #00ccff;
+            font-size: 1.2em;
+            margin-top: 5px;
+        }
+        .owasp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        .vuln-card {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 15px;
+            transition: all 0.3s ease;
+        }
+        .vuln-card:hover {
+            background: rgba(0, 255, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+        }
+        .vuln-card h3 {
+            color: #00ff00;
+            margin-bottom: 8px;
+        }
+        .vuln-card p {
+            color: #888;
+            font-size: 0.9em;
+        }
+        .vuln-card a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #00ccff;
+            text-decoration: none;
+        }
+        .vuln-card a:hover {
+            color: #00ff00;
+        }
+    </style>
 </head>
 
 <body class="hacker-body">
-    <!-- Matrix effect -->
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- HEADER / NAV -->
     <header class="hacker-header">
-        <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+        <div class="hacker-logo">Bugged<span class="muted">Cart</span></div>
 
         <nav class="hacker-nav">
             <a href="/" class="nav-link">HOME</a>
@@ -27,55 +91,84 @@
         </nav>
     </header>
 
-    <!-- MAIN CONTENT -->
     <main class="container">
         <section class="hacker-card">
 
-            <h1>🛒 BuggedCart Store</h1>
-            <p class="muted">This is the vulnerable e-commerce homepage of the lab.</p>
-
-            <!-- QUICK LINKS -->
-            <div style="margin-bottom: 20px;">
-                <a href="/login"><button>🔐 Admin Login</button></a>
-                <a href="/admin/contact"><button>📨 Contact Admin</button></a>
+            <div style="text-align: center; margin-bottom: 30px;">
+                <h1 class="brand-title">MR.YAHIA LAB : BuggedCart Vulnerable Website</h1>
+                <p class="subtitle">OWASP Top 10 Security Training Lab</p>
             </div>
 
-            <!-- SEARCH BAR -->
-            <form method="get" style="margin-bottom: 20px;">
-                <input type="text" name="search" placeholder="Search for a product" value="{{ query }}">
-                <button type="submit">Search</button>
-            </form>
+            <div class="disclaimer-box">
+                <h2>ETHICAL LEARNING ONLY</h2>
+                <p>This application is designed for EDUCATIONAL and SIMULATION purposes only.</p>
+                <p>All vulnerabilities are intentional for learning web security concepts.</p>
+                <p>Do NOT use these techniques on systems without explicit permission.</p>
+                <p style="color: #ff3333; margin-top: 10px;"><strong>Similar to DVWA - Practice ethical hacking safely!</strong></p>
+            </div>
 
-            <!-- PRODUCT LIST -->
-            <ul>
-                {% for product in products %}
-                    <li style="margin-bottom: 10px;">
+            <h2 style="color: #00ff00; text-align: center;">OWASP Top 10 Vulnerabilities Lab</h2>
+            <p class="muted" style="text-align: center;">Each vulnerability has Patched/Unpatched modes - Learn how attacks work and how to prevent them!</p>
 
-                        <!-- Product link -->
-                        <a href="/product/{{ product[0] if query else product.id }}">
-                            {{ product[1] if query else product.name }}
-                        </a>
-                        —
-                        ${{ product[2] if query else product.price }}
-
-                        <!-- Delete button (intentionally vulnerable, no auth/CSRF) -->
-                        <form method="POST"
-                              action="/admin/delete/{{ product[0] if query else product.id }}"
-                              style="display:inline;">
-                            <button type="submit" style="margin-left:10px;">
-                                Delete
-                            </button>
-                        </form>
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="owasp-grid">
+                <div class="vuln-card">
+                    <h3>A1 - Injection</h3>
+                    <p>SQL Injection attacks through unsanitized user input</p>
+                    <a href="/vuln/a1-injection">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A2 - Broken Authentication</h3>
+                    <p>Weak password storage and authentication flaws</p>
+                    <a href="/vuln/a2-authentication">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A3 - Sensitive Data Exposure</h3>
+                    <p>Exposed credentials and configuration data</p>
+                    <a href="/vuln/a3-sensitive-data">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A4 - XML External Entities</h3>
+                    <p>XXE attacks through malicious XML parsing</p>
+                    <a href="/vuln/a4-xxe">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A5 - Broken Access Control</h3>
+                    <p>Missing authorization checks on sensitive actions</p>
+                    <a href="/vuln/a5-access-control">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A6 - Security Misconfiguration</h3>
+                    <p>Debug modes, default credentials, verbose errors</p>
+                    <a href="/vuln/a6-misconfig">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A7 - Cross-Site Scripting (XSS)</h3>
+                    <p>Reflected and stored XSS attacks</p>
+                    <a href="/vuln/a7-xss">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A8 - Insecure Deserialization</h3>
+                    <p>Dangerous pickle/object deserialization</p>
+                    <a href="/vuln/a8-deserialization">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A9 - Vulnerable Components</h3>
+                    <p>Using libraries with known vulnerabilities</p>
+                    <a href="/vuln/a9-components">Explore Vulnerability &rarr;</a>
+                </div>
+                <div class="vuln-card">
+                    <h3>A10 - Logging Failures</h3>
+                    <p>Insufficient logging and monitoring</p>
+                    <a href="/vuln/a10-logging">Explore Vulnerability &rarr;</a>
+                </div>
+            </div>
 
         </section>
     </main>
 
     <footer class="hacker-footer">
-        <div>BuggedCart — Training Lab</div>
-        <div class="muted">⚠ Keep vulnerable apps isolated & local.</div>
+        <div>MR.YAHIA Security Lab - Educational Platform</div>
+        <div class="muted">For ethical learning and simulation purposes only.</div>
     </footer>
 </body>
 </html>

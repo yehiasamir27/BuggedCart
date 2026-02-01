@@ -2,26 +2,171 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A10 — Logging & Monitoring</title>
+  <title>A10 - Logging Failures | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+  <style>
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
+    }
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .input-form input[type="text"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px;
+      background: #000;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: inherit;
+    }
+    .input-form button {
+      padding: 12px 25px;
+      background: #003300;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+    .log-output {
+      background: #000;
+      border: 2px solid #333;
+      padding: 15px;
+      margin: 20px 0;
+      border-radius: 8px;
+      font-family: monospace;
+    }
+    .log-vulnerable { border-color: #ff3333; }
+    .log-secure { border-color: #00ff00; }
+    .example-box {
+      background: rgba(255,255,0,0.05);
+      border: 1px solid #ffff00;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
+  </style>
 </head>
 <body class="hacker-body">
   <canvas id="matrix-canvas"></canvas>
-  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
+
   <main class="container">
     <section class="hacker-card">
-      <h1>A10 — Logging & Monitoring Failures</h1>
-      <p class="muted">Submit input and this demo will write it to a local log file (educational only).</p>
+      <h1>A10 - Insufficient Logging & Monitoring</h1>
+      <p class="muted">Demonstrate improper logging of sensitive data.</p>
 
-      <form method="POST" action="/vuln/a10-logging">
-        <input name="val" placeholder="Anything to log"><button type="submit">Log</button>
-      </form>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
-      {% if msg %}<p style="color:green">{{ msg }}</p>{% endif %}
-      <p class="muted">Mitigation: redact secrets in logs and monitor for suspicious activity.</p>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Sensitive data is redacted before logging.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Logging sensitive data without redaction!
+        {% endif %}
+      </div>
+
+      <h3>Submit Data to Log</h3>
+      <div class="input-form">
+        <form method="POST" action="/vuln/a10-logging?patched={{ 'true' if patched else 'false' }}">
+          <input type="text" name="data" placeholder="Enter data (try credit card or password)...">
+          <br>
+          <button type="submit">Log Data</button>
+        </form>
+      </div>
+
+      <div class="example-box">
+        <h4>Try logging sensitive data:</h4>
+        <ul>
+          <li>Credit card: <code>4532-1234-5678-9012</code></li>
+          <li>Password: <code>password: secretPass123</code></li>
+          <li>Email: <code>user@example.com</code></li>
+        </ul>
+      </div>
+
+      {% if log_output %}
+      <h3>Log Result:</h3>
+      <div class="log-output {{ 'log-secure' if patched else 'log-vulnerable' }}">
+        <p><strong>{{ log_output }}</strong></p>
+        {% if log_entry %}
+        <hr style="border-color: #333;">
+        <p>Log Entry: <code>{{ log_entry }}</code></p>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>Logging Security Issues</h3>
+        
+        <h4>Problem 1: Logging Sensitive Data</h4>
+        <p>Never log passwords, credit cards, PII, or session tokens in plaintext.</p>
+        <pre style="background:#000; padding:10px;"># BAD - Logs password
+logger.info(f"User login: {username}, password: {password}")
+
+# GOOD - Redacts sensitive data
+logger.info(f"User login: {username}, password: [REDACTED]")</pre>
+        
+        <h4>Problem 2: Insufficient Logging</h4>
+        <p>Not logging security events makes incident response impossible.</p>
+        <ul>
+          <li>Failed login attempts</li>
+          <li>Access control failures</li>
+          <li>Input validation failures</li>
+          <li>Server errors with user context</li>
+        </ul>
+        
+        <h4>Problem 3: No Monitoring/Alerting</h4>
+        <p>Logs are useless without active monitoring and alerting systems.</p>
+        
+        <h4>Prevention:</h4>
+        <ul>
+          <li>Implement centralized logging (ELK, Splunk)</li>
+          <li>Set up alerts for suspicious patterns</li>
+          <li>Redact sensitive data before logging</li>
+          <li>Log security events comprehensively</li>
+          <li>Regular log review and analysis</li>
+        </ul>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
     </section>
   </main>
-  <footer class="hacker-footer"></footer>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

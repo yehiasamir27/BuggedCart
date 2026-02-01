@@ -2,107 +2,216 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A1 Injection</title>
+  <title>A1 - SQL Injection | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
   <style>
-    body { 
-      font-family: 'Source Code Pro', monospace;
-      background-color: #0a0a0a;
-      color: #00ff00;
-      margin: 0;
-      padding: 20px;
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
     }
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      background-color: #111;
-      padding: 20px;
-      border: 1px solid #00ff00;
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
     }
-    input, button {
-      background-color: #000;
+    .patch-btn.unpatched {
+      background: #330000;
+      border-color: #ff3333;
+      color: #ff3333;
+    }
+    .patch-btn.patched {
+      background: #003300;
+      border-color: #00ff00;
       color: #00ff00;
+    }
+    .patch-btn.active {
+      transform: scale(1.1);
+      box-shadow: 0 0 20px currentColor;
+    }
+    .status-box {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+    }
+    .status-vulnerable {
+      background: rgba(255,0,0,0.1);
+      border: 2px solid #ff3333;
+    }
+    .status-secure {
+      background: rgba(0,255,0,0.1);
+      border: 2px solid #00ff00;
+    }
+    .result-box {
+      background: #111;
+      border: 1px solid #333;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+    .injection-success {
+      background: rgba(255,0,0,0.2);
+      border-color: #ff3333;
+    }
+    .payload-examples {
+      background: rgba(0,255,0,0.05);
       border: 1px solid #00ff00;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+    .payload-examples code {
+      display: block;
       padding: 5px;
-      margin: 5px;
-    }
-    ul { 
-      list-style-type: none;
-      padding: 0;
-    }
-    li {
-      background-color: #222;
       margin: 5px 0;
+      background: #000;
+      cursor: pointer;
+    }
+    .payload-examples code:hover {
+      background: #111;
+      color: #00ccff;
+    }
+    input[type="text"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 10px;
+      background: #000;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: inherit;
+    }
+    button[type="submit"] {
+      padding: 10px 25px;
+      background: #003300;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+    button[type="submit"]:hover {
+      background: #004400;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 15px 0;
+    }
+    th, td {
       padding: 10px;
       border: 1px solid #333;
+      text-align: left;
     }
-    .injection-detected {
-      background-color: #330000;
-      border: 1px solid #ff0000;
-      padding: 15px;
-      margin: 10px 0;
+    th {
+      background: #222;
+      color: #00ff00;
     }
-    .normal-search {
-      background-color: #222;
-      border: 1px solid #00ff00;
-      padding: 15px;
-      margin: 10px 0;
+    .back-link {
+      display: inline-block;
+      margin-top: 20px;
+      color: #00ccff;
     }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>A1 Injection</h1>
-    
-    <form method="GET" action="/vuln/a1-sqli">
-      <input name="q" placeholder="search (try: OR '1'='1')" value="{{ q }}">
-      <button>Search Products</button>
-    </form>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
 
-    {% if injection_detected %}
-      <div class="injection-detected">
-        <h2>SQL Injection Detected!</h2>
-        <p>SQL injection payload detected: <strong>{{ q }}</strong></p>
-        <p>Displaying fake products to demonstrate injection impact.</p>
-      </div>
-      
-      <div class="injection-detected">
-        <h3>Fake Products (Injection Results):</h3>
-        <ul>
-          {% for p in products %}
-            <li><strong>Product:</strong> {{ p[1] }} | <strong>Price:</strong> ${{ p[2] }} | <strong>ID:</strong> {{ p[0] }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% else %}
-      <div class="normal-search">
-        <ul>
-          {% for p in products %}
-            <li><strong>Product:</strong> {{ p[1] }} | <strong>Price:</strong> ${{ p[2] }} | <strong>ID:</strong> {{ p[0] }}</li>
-          {% endfor %}
-        </ul>
-      </div>
-    {% endif %}
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A1 - SQL Injection</h1>
+      <p class="muted">Test SQL injection attacks against a product search feature.</p>
 
-    <h3>What is SQL Injection?</h3>
-    <p>SQL Injection occurs when user input is improperly sanitized before being used in database queries.</p>
-    
-    <h3>Safe example (concept)</h3>
-    <pre>-- Vulnerable pattern (concept):
-sql = "SELECT * FROM product WHERE name LIKE '%" + user_input + "%'"
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
--- Safe pattern (concept):
-cursor.execute("SELECT * FROM product WHERE name LIKE ?", (user_input,))</pre>
-    
-    <h3>Why it matters</h3>
-    <p>Injection can expose or modify data, or run unwanted commands on the DB/server.</p>
-    
-    <h3>Mitigation (recommended)</h3>
-    <ul>
-      <li>Use parameterized queries / prepared statements.</li>
-      <li>Apply input validation and least privilege for DB accounts.</li>
-      <li>Escape or bind parameters instead of concatenating.</li>
-    </ul>
-  </div>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Using parameterized queries. SQL injection attacks will fail.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Using string concatenation. SQL injection is possible!
+        {% endif %}
+      </div>
+
+      <h3>Search Products</h3>
+      <form method="GET" action="/vuln/a1-injection">
+        <input type="hidden" name="patched" value="{{ 'true' if patched else 'false' }}">
+        <input type="text" name="q" placeholder="Enter product name or SQL injection payload..." value="{{ q }}">
+        <button type="submit">Search</button>
+      </form>
+
+      {% if not patched %}
+      <div class="payload-examples">
+        <h4>Try these SQL Injection Payloads:</h4>
+        <code onclick="document.querySelector('input[name=q]').value=this.innerText">' OR '1'='1' --</code>
+        <code onclick="document.querySelector('input[name=q]').value=this.innerText">' OR 1=1 --</code>
+        <code onclick="document.querySelector('input[name=q]').value=this.innerText">' UNION SELECT 1,2,3,4 --</code>
+        <code onclick="document.querySelector('input[name=q]').value=this.innerText">admin' --</code>
+      </div>
+      {% endif %}
+
+      {% if result %}
+      <div class="result-box {{ 'injection-success' if injection_detected else '' }}">
+        <strong>Result:</strong> {{ result }}
+      </div>
+      {% endif %}
+
+      {% if products %}
+      <h3>Search Results:</h3>
+      <table>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Price</th>
+          <th>Description</th>
+        </tr>
+        {% for p in products %}
+        <tr>
+          <td>{{ p[0] }}</td>
+          <td>{{ p[1] }}</td>
+          <td>${{ p[2] }}</td>
+          <td>{{ p[3] if p[3] else '-' }}</td>
+        </tr>
+        {% endfor %}
+      </table>
+      {% endif %}
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>How SQL Injection Works</h3>
+        <p>SQL Injection occurs when user input is directly concatenated into SQL queries without sanitization.</p>
+        
+        <h4>Vulnerable Code:</h4>
+        <pre style="background:#000; padding:10px;">sql = "SELECT * FROM product WHERE name LIKE '%" + user_input + "%'"</pre>
+        
+        <h4>Safe Code (Parameterized):</h4>
+        <pre style="background:#000; padding:10px;">cursor.execute("SELECT * FROM product WHERE name LIKE ?", (f'%{user_input}%',))</pre>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
+    </section>
+  </main>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

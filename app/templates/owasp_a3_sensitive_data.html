@@ -2,69 +2,156 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A3 — Sensitive Data Exposure</title>
+  <title>A3 - Sensitive Data Exposure | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
   <style>
-    body { 
-      font-family: 'Source Code Pro', monospace;
-      background-color: #0a0a0a;
-      color: #00ff00;
-      margin: 0;
-      padding: 20px;
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
     }
-    .container {
-      max-width: 600px;
-      margin: 0 auto;
-      background-color: #111;
-      padding: 20px;
-      border: 1px solid #00ff00;
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
     }
-    .sensitive-info {
-      background-color: #330000;
-      border: 1px solid #ff0000;
-      padding: 10px;
-      margin: 10px 0;
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .reveal-btn {
+      padding: 15px 30px;
+      background: #222;
+      border: 2px solid #ff3333;
+      color: #ff3333;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      margin: 20px 0;
     }
+    .reveal-btn:hover { background: #330000; }
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .data-table th, .data-table td {
+      padding: 12px;
+      border: 1px solid #333;
+      text-align: left;
+    }
+    .data-table th { background: #222; color: #00ff00; }
+    .exposed { color: #ff3333; background: rgba(255,0,0,0.1); }
+    .protected { color: #00ff00; background: rgba(0,255,0,0.1); }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
   </style>
 </head>
-<body>
-  <div class="container">
-    <h1>A3 — Sensitive Data Exposure</h1>
-    <p class="muted">This page shows demo environment/config values (educational only).</p>
+<body class="hacker-body">
+  <canvas id="matrix-canvas"></canvas>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
 
-    <h3>Exposed values (lab)</h3>
-    <div class="sensitive-info">
-      <p><strong>Database Path:</strong> {{     C:\Program Files\Microsoft SQL Server\MSSQL16.MSSQLSERVER\MSSQL\DATA\YourDatabase.mdf
-    D:\programs\ibm\am\db\dname1.db }}</p>
-      <p><strong>Secret Key:</strong> {{ MIIBOgIBAAJBAKj34GkxFhD90vcNLYLInFEX6Ppy1tPf9Cnzj4p4WGeKLs1Pt8Qu
-KUpRKfFLfRYC9AIKjbJTWit+CqvjWYzvQwECAwEAAQJAIJLixBy2qpFoS4DSmoEm
-o3qGy0t6z09AIJtH+5OeRV1be+N4cDYJKffGzDa88vQENZiRm0GRq6a+HPGQMd2k
-TQIhAKMSvzIBnni7ot/OSie2TmJLY4SwTQAevXysE2RbFDYdAiEBCUEaRQnMnbp7
-9mxDXDf6AU0cN/RPBjb9qSHDcWZHGzUCIG2Es59z8ugGrDY+pxLQnwfotadxd+Uy
-v/Ow5T0q5gIJAiEAyS4RaI9YG8EWx/2w0T67ZUVAw8eOMB6BIUg0Xcu+3okCIBOs
-/5OiPgoTdSy7bcF9IGpSE8ZgGKzgYQVZeN97YE00 }}</p>
-      <p><strong>Database Password:</strong> {{ DB_password = EL7AG_YAHIA_WA7ED_BAS_NUMBER_1}}</p>
-    </div>
+  <main class="container">
+    <section class="hacker-card">
+      <h1>A3 - Sensitive Data Exposure</h1>
+      <p class="muted">Simulate accessing sensitive configuration data and credentials.</p>
 
-    <h3>What is Sensitive Data Exposure?</h3>
-    <p>Occurs when applications don't properly protect sensitive data such as financial, healthcare, or PII.</p>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
-    <h3>Common Examples</h3>
-    <ul>
-      <li>Unencrypted storage of sensitive data</li>
-      <li>Inadequate key management</li>
-      <li>Transmitting data over unencrypted channels</li>
-      <li>Exposing sensitive data in URLs or logs</li>
-    </ul>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Sensitive data is properly redacted and protected.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Sensitive data exposed without protection!
+        {% endif %}
+      </div>
 
-    <h3>Mitigation (recommended)</h3>
-    <ul>
-      <li>Encrypt sensitive data at rest and in transit</li>
-      <li>Don't store unnecessary sensitive data</li>
-      <li>Use strong encryption algorithms</li>
-      <li>Do not reveal secrets in templates or responses</li>
-      <li>Implement proper access controls</li>
-    </ul>
-  </div>
+      <form method="POST" action="/vuln/a3-sensitive-data?patched={{ 'true' if patched else 'false' }}">
+        <button type="submit" class="reveal-btn">Reveal Sensitive Data</button>
+      </form>
+
+      {% if exposed_data %}
+      <table class="data-table">
+        <tr>
+          <th>Data Type</th>
+          <th>Value</th>
+          <th>Status</th>
+        </tr>
+        <tr>
+          <td>Database Path</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ exposed_data.db_path }}</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ 'PROTECTED' if patched else 'EXPOSED!' }}</td>
+        </tr>
+        <tr>
+          <td>Secret Key</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ exposed_data.secret_key }}</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ 'PROTECTED' if patched else 'EXPOSED!' }}</td>
+        </tr>
+        <tr>
+          <td>Database Password</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ exposed_data.db_password }}</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ 'PROTECTED' if patched else 'EXPOSED!' }}</td>
+        </tr>
+        <tr>
+          <td>API Key</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ exposed_data.api_key }}</td>
+          <td class="{{ 'protected' if patched else 'exposed' }}">{{ 'PROTECTED' if patched else 'EXPOSED!' }}</td>
+        </tr>
+      </table>
+      <p><strong>Status:</strong> {{ exposed_data.message }}</p>
+      {% endif %}
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>How This Vulnerability Works</h3>
+        <p>Sensitive data exposure occurs when applications don't properly protect confidential information.</p>
+        
+        <h4>Common Mistakes:</h4>
+        <ul>
+          <li>Exposing debug endpoints in production</li>
+          <li>Hardcoding secrets in source code</li>
+          <li>Transmitting data without encryption (HTTP vs HTTPS)</li>
+          <li>Storing passwords in plaintext</li>
+          <li>Verbose error messages revealing system info</li>
+        </ul>
+        
+        <h4>Prevention:</h4>
+        <ul>
+          <li>Use environment variables for secrets</li>
+          <li>Encrypt sensitive data at rest and in transit</li>
+          <li>Implement proper access controls</li>
+          <li>Disable debug mode in production</li>
+          <li>Use secret management tools (Vault, AWS Secrets Manager)</li>
+        </ul>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
+    </section>
+  </main>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

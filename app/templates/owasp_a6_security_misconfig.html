@@ -2,24 +2,149 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A6 — Security Misconfiguration</title>
+  <title>A6 - Security Misconfiguration | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+  <style>
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
+    }
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .reveal-btn {
+      padding: 15px 30px;
+      background: #222;
+      border: 2px solid #ff3333;
+      color: #ff3333;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      margin: 20px 0;
+    }
+    .info-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+    }
+    .info-table th, .info-table td {
+      padding: 12px;
+      border: 1px solid #333;
+      text-align: left;
+    }
+    .info-table th { background: #222; color: #00ff00; }
+    .exposed { color: #ff3333; }
+    .hidden { color: #00ff00; }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
+  </style>
 </head>
 <body class="hacker-body">
   <canvas id="matrix-canvas"></canvas>
-  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
+
   <main class="container">
     <section class="hacker-card">
-      <h1>A6 — Security Misconfiguration</h1>
-      <p class="muted">Server/runtime information (shows why misconfiguration matters).</p>
+      <h1>A6 - Security Misconfiguration</h1>
+      <p class="muted">Expose server configuration and debug information.</p>
 
-      <p><strong>Python:</strong> {{ info.python_version }}</p>
-      <p><strong>Flask debug mode:</strong> {{ info.flask_debug }}</p>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
-      <p class="muted">Mitigation: set debug=False, hide stack traces and sensitive headers in production.</p>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Server information is hidden from users.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Debug and configuration info exposed!
+        {% endif %}
+      </div>
+
+      <form method="POST" action="/vuln/a6-misconfig?patched={{ 'true' if patched else 'false' }}">
+        <button type="submit" class="reveal-btn">Probe Server Configuration</button>
+      </form>
+
+      {% if info %}
+      <table class="info-table">
+        <tr>
+          <th>Configuration</th>
+          <th>Value</th>
+        </tr>
+        <tr>
+          <td>Python Version</td>
+          <td class="{{ 'hidden' if patched else 'exposed' }}">{{ info.python_version }}</td>
+        </tr>
+        <tr>
+          <td>Flask Debug Mode</td>
+          <td class="{{ 'hidden' if patched else 'exposed' }}">{{ info.flask_debug }}</td>
+        </tr>
+        <tr>
+          <td>Server Info</td>
+          <td class="{{ 'hidden' if patched else 'exposed' }}">{{ info.server_info }}</td>
+        </tr>
+        <tr>
+          <td>Database Info</td>
+          <td class="{{ 'hidden' if patched else 'exposed' }}">{{ info.db_info }}</td>
+        </tr>
+      </table>
+      <p><strong>Status:</strong> {{ info.message }}</p>
+      {% endif %}
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>Common Misconfigurations</h3>
+        <ul>
+          <li><strong>Debug Mode in Production:</strong> Exposes stack traces, source code, and allows code execution</li>
+          <li><strong>Default Credentials:</strong> admin/admin, root/root, etc.</li>
+          <li><strong>Verbose Error Messages:</strong> Reveal database schema, file paths</li>
+          <li><strong>Directory Listing Enabled:</strong> Shows file structure</li>
+          <li><strong>Unnecessary Features Enabled:</strong> Unused endpoints, services</li>
+          <li><strong>Missing Security Headers:</strong> X-Frame-Options, CSP, etc.</li>
+        </ul>
+        
+        <h4>Prevention:</h4>
+        <ul>
+          <li>Disable debug mode in production</li>
+          <li>Use security scanners (nikto, nmap)</li>
+          <li>Configure proper error handling</li>
+          <li>Remove default accounts</li>
+          <li>Implement security headers</li>
+          <li>Regular security audits</li>
+        </ul>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
     </section>
   </main>
-  <footer class="hacker-footer"></footer>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

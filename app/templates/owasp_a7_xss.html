@@ -2,26 +2,183 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A7 — XSS (Stored)</title>
+  <title>A7 - XSS | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+  <style>
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
+    }
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .input-form input[type="text"] {
+      width: 100%;
+      max-width: 500px;
+      padding: 12px;
+      background: #000;
+      border: 1px solid #00ff00;
+      color: #00ff00;
+      font-family: inherit;
+    }
+    .input-form button {
+      padding: 12px 25px;
+      background: #003300;
+      border: 2px solid #00ff00;
+      color: #00ff00;
+      cursor: pointer;
+      font-family: inherit;
+      margin-top: 10px;
+    }
+    .output-box {
+      background: #111;
+      border: 2px solid #333;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      min-height: 50px;
+    }
+    .output-vulnerable { border-color: #ff3333; }
+    .output-secure { border-color: #00ff00; }
+    .payload-examples {
+      background: rgba(0,255,0,0.05);
+      border: 1px solid #00ff00;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 8px;
+    }
+    .payload-examples code {
+      display: block;
+      padding: 8px;
+      margin: 5px 0;
+      background: #000;
+      cursor: pointer;
+    }
+    .payload-examples code:hover { background: #111; color: #00ccff; }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
+  </style>
 </head>
 <body class="hacker-body">
   <canvas id="matrix-canvas"></canvas>
-  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
+
   <main class="container">
     <section class="hacker-card">
-      <h1>A7 — Cross-site Scripting (Stored)</h1>
-      <p class="muted">Add a review for product #1. Stored reviews will be rendered unsafely in product page (lab).</p>
+      <h1>A7 - Cross-Site Scripting (XSS)</h1>
+      <p class="muted">Test reflected and stored XSS attacks.</p>
 
-      <form method="POST" action="/product/1">
-        <textarea name="comment" rows="4" cols="60" placeholder="Write a review..."></textarea><br><br>
-        <button type="submit">Submit review for product 1</button>
-      </form>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
-      <p class="muted">Mitigation: escape output and sanitize inputs; remove <code>|safe</code>.</p>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> HTML is escaped, XSS attacks are blocked.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> User input rendered without sanitization!
+        {% endif %}
+      </div>
+
+      <h3>User Input (Reflected XSS Demo)</h3>
+      <div class="input-form">
+        <form method="POST" action="/vuln/a7-xss?patched={{ 'true' if patched else 'false' }}">
+          <input type="text" name="input" placeholder="Enter your name or XSS payload..." value="{{ user_input }}">
+          <br>
+          <button type="submit">Submit</button>
+        </form>
+      </div>
+
+      {% if rendered_output %}
+      <h3>Output:</h3>
+      <div class="output-box {{ 'output-secure' if patched else 'output-vulnerable' }}">
+        <strong>Your Input:</strong><br>
+        {% if patched %}
+          {{ rendered_output }}
+        {% else %}
+          {{ rendered_output|safe }}
+        {% endif %}
+      </div>
+      
+      {% if xss_detected %}
+        {% if patched %}
+          <p style="color:#00ff00">XSS payload was sanitized and blocked!</p>
+        {% else %}
+          <p style="color:#ff3333">XSS payload executed! Check if alert appeared or script ran.</p>
+        {% endif %}
+      {% endif %}
+      {% endif %}
+
+      {% if not patched %}
+      <div class="payload-examples">
+        <h4>Try these XSS Payloads:</h4>
+        <code onclick="document.querySelector('input[name=input]').value=this.innerText">&lt;script&gt;alert('XSS')&lt;/script&gt;</code>
+        <code onclick="document.querySelector('input[name=input]').value=this.innerText">&lt;img src=x onerror="alert('XSS')"&gt;</code>
+        <code onclick="document.querySelector('input[name=input]').value=this.innerText">&lt;svg onload="alert('XSS')"&gt;</code>
+        <code onclick="document.querySelector('input[name=input]').value=this.innerText">&lt;body onload="alert('XSS')"&gt;</code>
+        <code onclick="document.querySelector('input[name=input]').value=this.innerText">&lt;a href="javascript:alert('XSS')"&gt;Click&lt;/a&gt;</code>
+      </div>
+      {% endif %}
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>Types of XSS</h3>
+        <ul>
+          <li><strong>Reflected XSS:</strong> Payload in URL/form, reflected back immediately</li>
+          <li><strong>Stored XSS:</strong> Payload stored in database, affects all visitors</li>
+          <li><strong>DOM-based XSS:</strong> Client-side JavaScript manipulation</li>
+        </ul>
+        
+        <h4>Impact:</h4>
+        <ul>
+          <li>Session hijacking (steal cookies)</li>
+          <li>Credential theft</li>
+          <li>Keylogging</li>
+          <li>Phishing attacks</li>
+          <li>Malware distribution</li>
+        </ul>
+        
+        <h4>Prevention:</h4>
+        <ul>
+          <li>Escape HTML output (use template auto-escaping)</li>
+          <li>Content Security Policy (CSP)</li>
+          <li>HTTPOnly cookies</li>
+          <li>Input validation and sanitization</li>
+        </ul>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
     </section>
   </main>
-  <footer class="hacker-footer"></footer>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>

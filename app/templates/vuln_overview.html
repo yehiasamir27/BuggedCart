@@ -2,18 +2,86 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Vulnerabilities Overview - BuggedCart</title>
-
-    <!-- Fonts + hacker CSS/JS -->
+    <title>OWASP Top 10 Overview | MR.YAHIA Lab</title>
     <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
     <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
+    <style>
+        .vuln-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .vuln-item {
+            background: rgba(0, 255, 0, 0.05);
+            border: 1px solid #00ff00;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 0.3s ease;
+        }
+        .vuln-item:hover {
+            background: rgba(0, 255, 0, 0.15);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 20px rgba(0, 255, 0, 0.3);
+        }
+        .vuln-item h3 {
+            color: #00ff00;
+            margin-bottom: 10px;
+        }
+        .vuln-item p {
+            color: #888;
+            font-size: 0.9em;
+            margin-bottom: 15px;
+        }
+        .vuln-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        .vuln-btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+        .btn-vulnerable {
+            background: #330000;
+            border: 1px solid #ff3333;
+            color: #ff3333;
+        }
+        .btn-vulnerable:hover {
+            background: #440000;
+        }
+        .btn-patched {
+            background: #003300;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        .btn-patched:hover {
+            background: #004400;
+        }
+        .disclaimer-box {
+            background: linear-gradient(135deg, #1a0000 0%, #0a0a0a 100%);
+            border: 2px solid #ff3333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .disclaimer-box h2 {
+            color: #ff3333;
+        }
+        .disclaimer-box p {
+            color: #ffcc00;
+        }
+    </style>
 </head>
 <body class="hacker-body">
     <canvas id="matrix-canvas"></canvas>
 
     <header class="hacker-header">
-      <div class="hacker-logo">BC<span class="muted">-lab</span></div>
+      <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
       <nav class="hacker-nav">
         <a href="/" class="nav-link">HOME</a>
         <a href="/products" class="nav-link">PRODUCTS</a>
@@ -25,72 +93,113 @@
 
     <main class="container">
       <section class="hacker-card">
-        <h1>Vulnerabilities Overview</h1>
-        <p class="muted">This page documents the intentionally-vulnerable lab items. Do not expose the backend publicly.</p>
+        <h1 style="text-align:center; color:#00ff00;">OWASP Top 10 Vulnerabilities Lab</h1>
+        
+        <div class="disclaimer-box">
+            <h2>ETHICAL LEARNING ENVIRONMENT</h2>
+            <p>This lab simulates real vulnerabilities for educational purposes only.</p>
+            <p>Each vulnerability can be tested in <strong style="color:#ff3333;">UNPATCHED</strong> (vulnerable) or <strong style="color:#00ff00;">PATCHED</strong> (secure) mode.</p>
+            <p style="margin-top:10px;">Created by <strong>MR.YAHIA</strong> - Similar to DVWA</p>
+        </div>
 
-        <div style="margin-top:18px; display:grid; gap:12px;">
-          <div class="hacker-card">
-            <h3>A1 — Injection (SQLi)</h3>
-            <p class="muted">Summary: Unparameterized SQL queries in search/product endpoints.</p>
-            <p><strong>Location (edit with exact path/lines):</strong> backend/routes.py — <em>replace with exact file:line</em></p>
-            <p><strong>How tested:</strong> local lab scan (ZAP). See docs/</p>
-            <p><strong>Mitigation:</strong> Use parameterized queries (prepared statements), input validation, least-privilege DB account.</p>
+        <div class="vuln-grid">
+          <div class="vuln-item">
+            <h3>A1 - Injection (SQL)</h3>
+            <p>SQL injection through unsanitized user input in database queries.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a1-injection?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a1-injection?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
           </div>
 
-          <div class="hacker-card">
-            <h3>A7 — Cross-site Scripting (XSS)</h3>
-            <p class="muted">Summary: User reviews are rendered with `|safe` or without escaping.</p>
-            <p><strong>Location (edit):</strong> app/templates/product.html — render review output: replace `|safe` and sanitize inputs.</p>
-            <p><strong>Mitigation:</strong> Remove `|safe`, use automatic escaping, or sanitize server-side with Bleach.</p>
+          <div class="vuln-item">
+            <h3>A2 - Broken Authentication</h3>
+            <p>Authentication bypass through SQL injection in login forms.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a2-authentication?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a2-authentication?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
           </div>
 
-          <div class="hacker-card">
-            <h3>Command Injection</h3>
-            <p class="muted">Summary: Shell calls built using user input (e.g., contact/admin commands).</p>
-            <p><strong>Location (edit):</strong> backend/whatever_handler.py — replace with `subprocess.run([...], shell=False)` and input validation.</p>
-            <p><strong>Mitigation:</strong> Avoid shell usage with user input; use safe APIs and validate values.</p>
+          <div class="vuln-item">
+            <h3>A3 - Sensitive Data Exposure</h3>
+            <p>Exposed credentials, API keys, and configuration data.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a3-sensitive-data?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a3-sensitive-data?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
           </div>
 
-          <div class="hacker-card">
-            <h3>CSRF</h3>
-            <p class="muted">Summary: State-changing POST endpoints lack CSRF tokens (delete product, admin actions).</p>
-           <p><strong>Mitigation:</strong> Use Flask-WTF CSRFProtect and include <code>{{ '{{ csrf_token() }}' }}</code> in forms.</p>
-
+          <div class="vuln-item">
+            <h3>A4 - XML External Entities (XXE)</h3>
+            <p>XXE attacks through malicious XML parsing.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a4-xxe?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a4-xxe?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
           </div>
 
-          <div class="hacker-card">
-            <h3>Other</h3>
-            <p class="muted">Add any other items you implemented — e.g., insecure file upload, misconfig. Fill exact locations and mitigation notes below.</p>
-            <pre style="white-space:pre-wrap; background:rgba(255,255,255,0.02); padding:8px; border-radius:6px;">
-- File: __________
-- Lines: __________
-- Test evidence: docs/screenshots/...
-- Mitigation applied: __________
-            </pre>
+          <div class="vuln-item">
+            <h3>A5 - Broken Access Control</h3>
+            <p>Missing authorization checks on sensitive admin functions.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a5-access-control?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a5-access-control?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
           </div>
 
+          <div class="vuln-item">
+            <h3>A6 - Security Misconfiguration</h3>
+            <p>Debug mode enabled, verbose errors, exposed server info.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a6-misconfig?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a6-misconfig?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
+          </div>
+
+          <div class="vuln-item">
+            <h3>A7 - Cross-Site Scripting (XSS)</h3>
+            <p>Reflected and stored XSS through unsanitized output.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a7-xss?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a7-xss?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
+          </div>
+
+          <div class="vuln-item">
+            <h3>A8 - Insecure Deserialization</h3>
+            <p>Remote code execution through unsafe pickle deserialization.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a8-deserialization?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a8-deserialization?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
+          </div>
+
+          <div class="vuln-item">
+            <h3>A9 - Vulnerable Components</h3>
+            <p>Using libraries and packages with known CVEs.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a9-components?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a9-components?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
+          </div>
+
+          <div class="vuln-item">
+            <h3>A10 - Logging & Monitoring Failures</h3>
+            <p>Logging sensitive data without redaction.</p>
+            <div class="vuln-buttons">
+              <a href="/vuln/a10-logging?patched=false" class="vuln-btn btn-vulnerable">Vulnerable</a>
+              <a href="/vuln/a10-logging?patched=true" class="vuln-btn btn-patched">Patched</a>
+            </div>
+          </div>
         </div>
 
       </section>
     </main>
 
     <footer class="hacker-footer">
-      <div>BuggedCart — training lab UI (display only)</div>
-      <div class="muted">Keep vulnerable services isolated & local.</div>
-      <h2>OWASP Top 10 — Quick Links</h2>
-<ul class="vuln-links">
-  <li><a href="/vuln/a1-injection">A1 — Injection</a></li>
-  <li><a href="/vuln/a2-authentication">A2 — Broken Authentication</a></li>
-  <li><a href="/vuln/a3-sensitive-data">A3 — Sensitive Data Exposure</a></li>
-  <li><a href="/vuln/a4-xxe">A4 — XML External Entities (XXE)</a></li>
-  <li><a href="/vuln/a5-access-control">A5 — Broken Access Control</a></li>
-  <li><a href="/vuln/a6-misconfig">A6 — Security Misconfiguration</a></li>
-  <li><a href="/vuln/a7-xss">A7 — Cross-site Scripting (XSS)</a></li>
-  <li><a href="/vuln/a8-deserialization">A8 — Insecure Deserialization</a></li>
-  <li><a href="/vuln/a9-components">A9 — Using Components with Known Vulnerabilities</a></li>
-  <li><a href="/vuln/a10-logging">A10 — Logging & Monitoring Failures</a></li>
-</ul>
-
+      <div>MR.YAHIA Security Lab - OWASP Top 10 Training Platform</div>
+      <div class="muted">For ethical learning and simulation purposes only.</div>
     </footer>
 </body>
 </html>

@@ -2,24 +2,129 @@
 <html>
 <head>
   <meta charset="utf-8">
-  <title>A9 — Components with Known Vulnerabilities</title>
+  <title>A9 - Vulnerable Components | MR.YAHIA Lab</title>
   <link href="https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@300;400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/hacker.css') }}">
+  <style>
+    .patch-toggle {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+      padding: 15px;
+      background: rgba(0,0,0,0.5);
+      border-radius: 8px;
+      align-items: center;
+    }
+    .patch-btn {
+      padding: 10px 20px;
+      border: 2px solid;
+      border-radius: 5px;
+      cursor: pointer;
+      font-family: inherit;
+      font-weight: bold;
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+    .patch-btn.unpatched { background: #330000; border-color: #ff3333; color: #ff3333; }
+    .patch-btn.patched { background: #003300; border-color: #00ff00; color: #00ff00; }
+    .patch-btn.active { transform: scale(1.1); box-shadow: 0 0 20px currentColor; }
+    .status-box { padding: 15px; border-radius: 8px; margin: 15px 0; }
+    .status-vulnerable { background: rgba(255,0,0,0.1); border: 2px solid #ff3333; }
+    .status-secure { background: rgba(0,255,0,0.1); border: 2px solid #00ff00; }
+    .deps-box {
+      background: #000;
+      border: 2px solid #333;
+      padding: 20px;
+      margin: 20px 0;
+      border-radius: 8px;
+      font-family: monospace;
+      white-space: pre-wrap;
+    }
+    .deps-vulnerable { border-color: #ff3333; }
+    .deps-secure { border-color: #00ff00; }
+    .message-box {
+      padding: 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-weight: bold;
+    }
+    .message-danger { background: rgba(255,0,0,0.1); color: #ff3333; border: 1px solid #ff3333; }
+    .message-success { background: rgba(0,255,0,0.1); color: #00ff00; border: 1px solid #00ff00; }
+    .back-link { display: inline-block; margin-top: 20px; color: #00ccff; }
+  </style>
 </head>
 <body class="hacker-body">
   <canvas id="matrix-canvas"></canvas>
-  <header class="hacker-header"><div class="hacker-logo">BC<span class="muted">-lab</span></div></header>
+  <header class="hacker-header">
+    <div class="hacker-logo">MR<span class="muted">.YAHIA</span></div>
+    <nav class="hacker-nav">
+      <a href="/" class="nav-link">HOME</a>
+      <a href="/vulns" class="nav-link">VULN-OVERVIEW</a>
+    </nav>
+  </header>
+
   <main class="container">
     <section class="hacker-card">
-      <h1>A9 — Components with Known Vulnerabilities</h1>
-      <p class="muted">This page shows an intentionally old requirements file for teaching.</p>
+      <h1>A9 - Using Components with Known Vulnerabilities</h1>
+      <p class="muted">Demonstrate the risks of using outdated libraries with CVEs.</p>
 
-      <h3>requirements_vuln.txt</h3>
-      <pre>{{ reqs }}</pre>
+      <div class="patch-toggle">
+        <span>Security Mode:</span>
+        <a href="?patched=false" class="patch-btn unpatched {{ 'active' if not patched else '' }}">UNPATCHED (Vulnerable)</a>
+        <a href="?patched=true" class="patch-btn patched {{ 'active' if patched else '' }}">PATCHED (Secure)</a>
+      </div>
 
-      <p class="muted">Mitigation: update packages and run dependency scanners (safety, pip-audit).</p>
+      <div class="status-box {{ 'status-secure' if patched else 'status-vulnerable' }}">
+        {% if patched %}
+          <strong>PATCHED MODE:</strong> Using latest secure versions of all dependencies.
+        {% else %}
+          <strong>UNPATCHED MODE:</strong> Using outdated packages with known CVEs!
+        {% endif %}
+      </div>
+
+      <div class="message-box {{ 'message-success' if patched else 'message-danger' }}">
+        {{ message }}
+      </div>
+
+      <h3>Dependencies (requirements.txt)</h3>
+      <div class="deps-box {{ 'deps-secure' if patched else 'deps-vulnerable' }}">{{ reqs }}</div>
+
+      <div class="hacker-card" style="margin-top: 20px;">
+        <h3>Why This Matters</h3>
+        <p>Applications often rely on hundreds of third-party libraries. Each outdated component is a potential attack vector.</p>
+        
+        <h4>Real-World Examples:</h4>
+        <ul>
+          <li><strong>Log4Shell (CVE-2021-44228):</strong> Critical RCE in Log4j affected millions of systems</li>
+          <li><strong>Heartbleed (CVE-2014-0160):</strong> OpenSSL bug exposed sensitive data</li>
+          <li><strong>Equifax Breach:</strong> Unpatched Apache Struts led to 147M records stolen</li>
+        </ul>
+        
+        <h4>How to Identify Vulnerable Components:</h4>
+        <ul>
+          <li>Run <code>pip-audit</code> or <code>safety check</code></li>
+          <li>Use <code>npm audit</code> for Node.js</li>
+          <li>Integrate Snyk, Dependabot, or WhiteSource</li>
+          <li>Monitor CVE databases (NVD, MITRE)</li>
+        </ul>
+        
+        <h4>Prevention:</h4>
+        <ul>
+          <li>Keep all dependencies updated</li>
+          <li>Use automated dependency scanning in CI/CD</li>
+          <li>Remove unused dependencies</li>
+          <li>Subscribe to security advisories</li>
+          <li>Use lock files for reproducible builds</li>
+        </ul>
+      </div>
+
+      <a href="/" class="back-link">&larr; Back to Home</a>
     </section>
   </main>
-  <footer class="hacker-footer"></footer>
+
+  <footer class="hacker-footer">
+    <div>MR.YAHIA Security Lab</div>
+  </footer>
+  <script src="{{ url_for('static', filename='js/hacker.js') }}" defer></script>
 </body>
 </html>
